@@ -6,15 +6,15 @@
 	let inputValue = '';
 
 	const validateInput = (text: string) =>
-		text &&
+		inputValue &&
 		/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(
 			text
 		);
 
-	$: validatedInput = validateInput(inputValue);
+	$: isInputValid = validateInput(inputValue);
 
 	const submit = async () => {
-		if (validatedInput) {
+		if (isInputValid) {
 			try {
 				const response = await fetch(`${serverUrl}/api/accessibility`, {
 					method: 'POST',
@@ -38,8 +38,18 @@
 	<h1 class="title">Acessaê!</h1>
 	<div class="card">
 		<h4 class="description">Insira um link e verifique a nota de performance do seu site.</h4>
-		<input type="text" id="text-input" placeholder="Link a validar" bind:value={inputValue} />
-		<small role="alert" class="alert" class:alerted={validatedInput}> A URL está incorreta </small>
+		<input
+			type="text"
+			id="text-input"
+			placeholder="Link a validar"
+			class:error={inputValue && !isInputValid}
+			class:valid={isInputValid}
+			bind:value={inputValue}
+			autofocus
+		/>
+		<small role="alert" class="alert" class:alerted={inputValue && !isInputValid}>
+			Por favor, insira um link válido
+		</small>
 		<button type="button" class="submit-button" on:click|preventDefault={submit}>
 			Verificar!
 		</button>
@@ -47,6 +57,22 @@
 </main>
 
 <style lang="scss">
+	.error {
+		border: 2px solid darkred;
+
+		&:focus {
+			border: 2px solid darkred !important;
+		}
+	}
+
+	.valid {
+		border: 2px solid green;
+
+		&:focus {
+			border: 2px solid green !important;
+		}
+	}
+
 	.card {
 		background-color: white;
 		padding: 2rem 4rem;
@@ -71,22 +97,22 @@
 	.alert {
 		color: darkred;
 		padding-left: 0.5rem;
-	}
-
-	.alerted {
 		visibility: hidden;
 	}
 
+	.alerted {
+		visibility: visible;
+	}
+
 	.submit-button {
-		box-shadow: 0px 0px 18px 1px rgba(0, 0, 0, 0.3);
 		display: block;
 		padding: 1rem 2rem;
 		margin-left: auto;
 		margin-right: auto;
 		margin-top: 1.5rem;
-		border: 1px solid lightgray;
+		border: 1px solid var(--primary-color);
 		border-radius: 0.5rem;
-		background-color: white;
+		background-color: var(--primary-color);
 		font-weight: 600;
 		font-size: 1rem;
 		color: black;
@@ -94,14 +120,13 @@
 		transition: all 0.1s;
 
 		&:hover {
-			background-color: var(--primary-color);
-			border-color: var(--primary-color);
+			background-color: white;
+			border: 1px solid black;
 		}
 
 		&:active {
 			background-color: black;
 			color: white;
-			box-shadow: none;
 		}
 
 		&:focus {
