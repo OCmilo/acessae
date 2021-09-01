@@ -15,21 +15,7 @@
 
 	const submit = async () => {
 		if (isInputValid) {
-			try {
-				const response = await fetch(`${serverUrl}/api/accessibility`, {
-					method: 'POST',
-					body: JSON.stringify({ url: inputValue }),
-					headers: {
-						'Content-Type': 'application/json'
-					}
-				});
-
-				if (response.ok) {
-					goto('/results', { state: response });
-				}
-			} catch (e) {
-				console.error('Houve um erro com o servidor:', e);
-			}
+			await goto(`/results/${encodeURIComponent(inputValue)}`);
 		}
 	};
 </script>
@@ -50,7 +36,12 @@
 		<small role="alert" class="alert" class:alerted={inputValue && !isInputValid}>
 			Por favor, insira um link válido
 		</small>
-		<button type="button" class="submit-button" on:click|preventDefault={submit}>
+		<button
+			disabled={!isInputValid}
+			type="button"
+			class="submit-button"
+			on:click|preventDefault={submit}
+		>
 			Verificar!
 		</button>
 	</div>
@@ -131,6 +122,12 @@
 
 		&:focus {
 			outline: none;
+		}
+
+		&:disabled {
+			background-color: lightgray;
+			border: 1px solid lightgray;
+			cursor: not-allowed;
 		}
 	}
 
