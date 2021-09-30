@@ -18,5 +18,8 @@
 	:global(:root) {
 		--card-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 		--primary-color: #f7c945;
+		--range-slider: black;
+		--range-handle-inactive: black; /* inactive handle color */
+		--range-handle-focus: black; /* non-focussed handle color */
 	}
 </style>

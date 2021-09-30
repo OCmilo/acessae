@@ -16,12 +16,20 @@
 			await goto(`/results/${encodeURIComponent(inputValue)}`);
 		}
 	};
+
+	const keyPressEvent = async (event: KeyboardEvent) => {
+		if (event.key === 'Enter') {
+			await submit();
+		}
+	};
 </script>
 
 <main id="wrapper">
 	<h1 class="title">Acessaê!</h1>
 	<div class="card">
-		<h4 class="description">Insira um link e verifique a nota de performance do seu site.</h4>
+		<label for="text-input" class="description">
+			Insira um link e verifique a nota de performance do seu site.
+		</label>
 		<input
 			type="text"
 			id="text-input"
@@ -29,6 +37,7 @@
 			class:error={inputValue && !isInputValid}
 			class:valid={isInputValid}
 			bind:value={inputValue}
+			on:keypress={keyPressEvent}
 			autofocus
 		/>
 		<small role="alert" class="alert" class:alerted={inputValue && !isInputValid}>
@@ -39,6 +48,7 @@
 			type="button"
 			class="submit-button"
 			on:click|preventDefault={submit}
+			bind:this={submitButton}
 		>
 			Verificar!
 		</button>
@@ -80,7 +90,10 @@
 	}
 
 	.description {
-		font-size: 1.1rem;
+		font-size: 1.3rem;
+		font-weight: bold;
+		display: block;
+		margin: 1.5rem 0;
 	}
 
 	.alert {

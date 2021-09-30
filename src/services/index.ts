@@ -9,6 +9,7 @@ export interface AccessibilityResponse {
 	comments: Array<unknown>;
 	usersVoted: Array<unknown>;
 	accessibility: number;
+	user_score: number;
 	__v: number;
 }
 
@@ -29,4 +30,22 @@ const getUri = async (url: string): Promise<AccessibilityResponse | Error> => {
 	return body;
 };
 
-export { getUri };
+const postRating = async (id: string, rating: number): Promise<void | Error> => {
+	let response: Response;
+	try {
+		response = await fetch(`${SERVER_URI}/api/user-ratings`, {
+			body: JSON.stringify({
+				id,
+				rating
+			})
+		});
+	} catch (error) {
+		return ERROR_500;
+	}
+
+	if (!response.ok) {
+		return ERROR_GENERAL;
+	}
+};
+
+export { getUri, postRating };
