@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
-	const serverUrl = 'http://localhost:3001';
-
 	let inputValue = '';
 
 	const validateInput = (text: string) =>
