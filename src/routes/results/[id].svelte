@@ -106,7 +106,7 @@
 			<small>Número de vezes que este link foi buscado: {data.searches}</small>
 		{/if}
 	</div>
-	{#if siteState === PageState.done}
+	{#if siteState === PageState.done && data.comments.length > 0}
 		<div class="card comment-card">
 			<h2>COMENTÁRIOS</h2>
 			{#each data.comments as { name, body, rating }}
