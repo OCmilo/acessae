@@ -1,17 +1,8 @@
+import type { AccessibilityResponse } from '../entities';
+
 const SERVER_URI = 'http://localhost:3001';
 const ERROR_500 = new Error('There was an error trying to reach the server');
 const ERROR_GENERAL = new Error('There was an error with the request');
-
-export interface AccessibilityResponse {
-	url: string;
-	_id: string;
-	searches: number;
-	comments: Array<unknown>;
-	usersVoted: Array<unknown>;
-	accessibility: number;
-	user_score: number;
-	__v: number;
-}
 
 const getUri = async (url: string): Promise<AccessibilityResponse | Error> => {
 	let response: Response;

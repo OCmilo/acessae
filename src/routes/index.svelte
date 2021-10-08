@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 
 	let inputValue = '';
+	let submitButton: HTMLButtonElement;
 
 	const validateInput = (text: string) =>
 		inputValue &&
@@ -19,7 +20,8 @@
 
 	const keyPressEvent = async (event: KeyboardEvent) => {
 		if (event.key === 'Enter') {
-			await submit();
+			submitButton.focus();
+			submitButton.click();
 		}
 	};
 </script>

@@ -3,9 +3,10 @@
 	import { page } from '$app/stores';
 	import { Wave } from 'svelte-loading-spinners';
 	import RangeSlider from 'svelte-range-slider-pips';
+	import Comment from '../../components/Comment.svelte';
 	import { getUri, postRating } from '../../services';
 	import responseMock from '../../mocks/response.json';
-	import type { AccessibilityResponse } from '../../services';
+	import type { AccessibilityResponse } from '../../entities';
 
 	enum PageState {
 		loading,
@@ -13,10 +14,14 @@
 		done
 	}
 
+	const rangeSlideStarterValue = 50;
+
 	// const pageId = $page.params.id;
 	let siteState: PageState = PageState.loading;
 	let data: AccessibilityResponse | null = null;
-	let values = [5];
+	let name: string = '';
+	let comment: string = '';
+	let values = [rangeSlideStarterValue];
 
 	onMount(() => {
 		// TODO remove mock
@@ -33,6 +38,7 @@
 		siteState = PageState.done;
 	});
 
+	// TODO submit comment
 	const submitRating = async () => {
 		try {
 			await postRating(data._id, values[0]);
@@ -68,16 +74,46 @@
 					<p class="score-number">{data.user_score}</p>
 				</div>
 			</div>
-			<div class="range-container">
-				<h2 class="rating-header">Deixe sua avaliação do site aqui :)</h2>
-				<RangeSlider id="rating-range" bind:values pips min={0} max={100} step={10} all="label" />
+			<div class="feedback-container">
+				<h2 class="rating-header">Deixe seu feedback do site aqui :)</h2>
+				<label for="name" class="label">Nome*:</label>
+				<input
+					id="name"
+					class="name"
+					type="text"
+					maxlength="40"
+					placeholder="Nome"
+					bind:value={name}
+					required
+				/>
+				<label for="comment" class="label">Comentário:</label>
+				<textarea
+					id="comment"
+					rows="8"
+					cols="60"
+					maxlength="549"
+					class="comment-area"
+					placeholder="Deixe seu comentário (opcional)"
+					bind:value={comment}
+				/>
+				<div class="range-container">
+					<RangeSlider id="rating-range" bind:values pips min={0} max={100} step={10} all="label" />
+				</div>
 				<button type="button" class="rating-button" on:click|preventDefault={submitRating}>
 					Enviar!
 				</button>
 			</div>
-			<h5>Número de vezes que este link foi buscado: {data.searches}</h5>
+			<small>Número de vezes que este link foi buscado: {data.searches}</small>
 		{/if}
 	</div>
+	{#if siteState === PageState.done}
+		<div class="card comment-card">
+			<h2>COMENTÁRIOS</h2>
+			{#each data.comments as { name, body, rating }}
+				<Comment {name} {body} {rating} />
+			{/each}
+		</div>
+	{/if}
 </main>
 
 <style lang="scss">
@@ -85,16 +121,15 @@
 		width: 100%;
 		height: 100%;
 		display: flex;
-		flex-direction: column;
 		justify-content: center;
-		align-items: center;
+		align-items: stretch;
+		padding: 3rem 0;
 		background-color: black;
 	}
 
 	.card {
 		background-color: var(--primary-color);
-		width: 50%;
-		padding: 2rem 8rem;
+		padding: 2rem 7rem;
 		border-radius: 2rem;
 		box-shadow: var(--card-shadow);
 		display: flex;
@@ -104,23 +139,64 @@
 		transition: all 0.5s;
 	}
 
+	.comment-card {
+		margin-left: 1rem;
+		padding: 2rem;
+		justify-content: flex-start;
+		align-items: flex-start;
+	}
+
+	.label {
+		margin-left: 4px;
+		font-weight: 600;
+		margin-bottom: 3px;
+	}
+
 	.scores {
 		width: 100%;
 		display: flex;
 		justify-content: space-around;
-		margin-top: 2rem;
+		margin-bottom: 1rem;
+	}
+
+	.feedback-container {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		padding: 2rem;
+	}
+
+	.name {
+		margin-bottom: 1rem;
+		padding: 0.8rem 1rem;
+		width: 20rem;
+		border: 2px solid black;
+		border-radius: 0.3rem;
+
+		&:focus {
+			outline: none;
+		}
 	}
 
 	.range-container {
 		width: 100%;
-		margin-top: 5rem;
-		margin-bottom: 3rem;
-		padding: 0 3rem;
+		margin-bottom: 2rem;
 	}
 
 	.rating-header {
-		text-align: center;
-		margin-bottom: 2.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.comment-area {
+		padding: 1rem;
+		margin-bottom: 2rem;
+		border: 2px solid black;
+		border-radius: 0.5rem;
+		resize: none;
+
+		&:focus {
+			outline: none;
+		}
 	}
 
 	.rating-button {
@@ -128,7 +204,6 @@
 		padding: 1rem 2rem;
 		margin-left: auto;
 		margin-right: auto;
-		margin-top: 4.5rem;
 		border: 1px solid black;
 		border-radius: 0.5rem;
 		background-color: black;
