@@ -5,6 +5,6 @@ services:
     ports:
       - '3000:3000'
   backend:
-    build: ../../QIRoss/acessae-backend/
+    image: ocmilo/acessae-backend
     restart: always
     network_mode: 'host'
