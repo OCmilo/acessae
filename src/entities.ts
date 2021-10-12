@@ -1,18 +1,15 @@
 export interface Comment {
-	id: number;
 	name: string;
 	body: string;
-	created: string;
-	rating?: number;
+	created_at: string;
+	user_score?: number;
 }
 
 export interface AccessibilityResponse {
-	url: string;
-	_id: string;
-	searches: number;
-	comments: Array<Comment | null>;
-	usersVoted: Array<unknown>;
-	accessibility: number;
+	id: string;
+	a11y_score: number;
 	user_score: number;
-	__v: number;
+	hits: number;
+	url: string;
+	comments: Array<Comment | null>;
 }

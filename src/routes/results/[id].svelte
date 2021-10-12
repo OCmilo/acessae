@@ -4,8 +4,7 @@
 	import { Wave } from 'svelte-loading-spinners';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import Comment from '../../components/Comment.svelte';
-	import { getUri, postRating } from '../../services';
-	import responseMock from '../../mocks/response.json';
+	import { getUri, postFeedback } from '../../services';
 	import type { AccessibilityResponse } from '../../entities';
 
 	enum PageState {
@@ -15,8 +14,8 @@
 	}
 
 	const rangeSlideStarterValue = 50;
+	const pageId = $page.params.id;
 
-	// const pageId = $page.params.id;
 	let siteState: PageState = PageState.loading;
 	let data: AccessibilityResponse | null = null;
 	let name: string = '';
@@ -24,24 +23,21 @@
 	let values = [rangeSlideStarterValue];
 
 	onMount(() => {
-		// TODO remove mock
-		// getUri(encodeURIComponent(pageId)).then((res) => {
-		// 	if (res instanceof Error) {
-		// 		siteState = 'error';
-		// 		return;
-		// 	}
+		getUri(encodeURIComponent(pageId)).then((res) => {
+			if (res instanceof Error) {
+				siteState = PageState.error;
+				return;
+			}
 
-		// 	data = res;
-		// 	siteState = 'done';
-		// });
-		data = responseMock;
-		siteState = PageState.done;
+			data = res;
+			siteState = PageState.done;
+		});
 	});
 
 	// TODO submit comment
-	const submitRating = async () => {
+	const submitFeedback = async () => {
 		try {
-			await postRating(data._id, values[0]);
+			await postFeedback(data.url, name, comment, values[0]);
 		} catch (_) {
 			siteState = PageState.error;
 		}
@@ -67,11 +63,11 @@
 			<div class="scores">
 				<div class="score-wrapper">
 					<h3>SCORE</h3>
-					<p class="score-number">{data.accessibility}</p>
+					<p class="score-number">{data.a11y_score}</p>
 				</div>
 				<div class="score-wrapper score-padding">
 					<h3>USER SCORE</h3>
-					<p class="score-number">{data.user_score}</p>
+					<p class="score-number">{data.user_score ?? 'S/N'}</p>
 				</div>
 			</div>
 			<div class="feedback-container">
@@ -99,18 +95,18 @@
 				<div class="range-container">
 					<RangeSlider id="rating-range" bind:values pips min={0} max={100} step={10} all="label" />
 				</div>
-				<button type="button" class="rating-button" on:click|preventDefault={submitRating}>
+				<button type="button" class="rating-button" on:click|preventDefault={submitFeedback}>
 					Enviar!
 				</button>
 			</div>
-			<small>Número de vezes que este link foi buscado: {data.searches}</small>
+			<small>Número de vezes que este link foi buscado: {data.hits}</small>
 		{/if}
 	</div>
 	{#if siteState === PageState.done && data.comments.length > 0}
 		<div class="card comment-card">
 			<h2>COMENTÁRIOS</h2>
-			{#each data.comments as { name, body, rating }}
-				<Comment {name} {body} {rating} />
+			{#each data.comments as { name, body, user_score }}
+				<Comment {name} {body} {user_score} />
 			{/each}
 		</div>
 	{/if}

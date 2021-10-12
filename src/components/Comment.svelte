@@ -1,15 +1,15 @@
 <script lang="ts">
 	export let name: string;
 	export let body: string;
-	export let rating: number | undefined;
+	export let user_score: number | undefined;
 </script>
 
 <div class="wrapper">
 	<div class="inner-wrapper">
 		<div class="description">
 			<h4 class="name">{name}</h4>
-			{#if rating}
-				<h4 class="rating">Nota: {rating}</h4>
+			{#if user_score}
+				<h4 class="user_score">Nota: {user_score}</h4>
 			{/if}
 		</div>
 		<p class="body">{body}</p>
