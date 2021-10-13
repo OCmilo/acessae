@@ -32,6 +32,9 @@ const postFeedback = async (
 	try {
 		response = await fetch(`${SERVER_URI}/feedback`, {
 			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
 			body: JSON.stringify({
 				url,
 				name,
