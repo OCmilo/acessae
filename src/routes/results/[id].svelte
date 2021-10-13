@@ -23,8 +23,9 @@
 	let values = [rangeSlideStarterValue];
 	let feedbackSent = false;
 
-	onMount(() => {
+	const fetchPage = () => {
 		getUri(encodeURIComponent(pageId)).then((res) => {
+			siteState = PageState.loading;
 			if (res instanceof Error) {
 				siteState = PageState.error;
 				return;
@@ -35,19 +36,23 @@
 					(prev, curr) => (prev += Number(curr.user_score)),
 					0
 				);
-				res['user_score'] = (sumOfRatings / res.comments.length).toString();
+				res['user_score'] = Math.round(sumOfRatings / res.comments.length).toString();
 			}
 
 			data = res;
 			siteState = PageState.done;
 		});
+	};
+
+	onMount(() => {
+		fetchPage();
 	});
 
-	// TODO submit comment
 	const submitFeedback = async () => {
 		try {
 			await postFeedback(data.url, name, comment, values[0]);
 			feedbackSent = true;
+			fetchPage();
 		} catch (_) {
 			siteState = PageState.error;
 		}
