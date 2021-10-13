@@ -30,11 +30,13 @@
 				return;
 			}
 
-			const sumOfRatings = res.comments.reduce(
-				(prev, curr) => (prev += Number(curr.user_score)),
-				0
-			);
-			res['user_score'] = (sumOfRatings / res.comments.length).toString();
+			if (res.user_score !== 'S/N') {
+				const sumOfRatings = res.comments.reduce(
+					(prev, curr) => (prev += Number(curr.user_score)),
+					0
+				);
+				res['user_score'] = (sumOfRatings / res.comments.length).toString();
+			}
 
 			data = res;
 			siteState = PageState.done;
@@ -75,7 +77,7 @@
 				</div>
 				<div class="score-wrapper score-padding">
 					<h3>USER SCORE</h3>
-					<p class="score-number">{data.user_score ?? 'S/N'}</p>
+					<p class="score-number">{data.user_score}</p>
 				</div>
 			</div>
 			<div class="feedback-container">
