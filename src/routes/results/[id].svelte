@@ -29,6 +29,12 @@
 				return;
 			}
 
+			const sumOfRatings = res.comments.reduce(
+				(prev, curr) => (prev += Number(curr.user_score)),
+				0
+			);
+			res['user_score'] = (sumOfRatings / res.comments.length).toString();
+
 			data = res;
 			siteState = PageState.done;
 		});
