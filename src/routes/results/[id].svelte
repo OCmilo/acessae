@@ -21,6 +21,7 @@
 	let name: string = '';
 	let comment: string = '';
 	let values = [rangeSlideStarterValue];
+	let feedbackSent = false;
 
 	onMount(() => {
 		getUri(encodeURIComponent(pageId)).then((res) => {
@@ -44,6 +45,7 @@
 	const submitFeedback = async () => {
 		try {
 			await postFeedback(data.url, name, comment, values[0]);
+			feedbackSent = true;
 		} catch (_) {
 			siteState = PageState.error;
 		}
@@ -101,9 +103,13 @@
 				<div class="range-container">
 					<RangeSlider id="rating-range" bind:values pips min={0} max={100} step={10} all="label" />
 				</div>
-				<button type="button" class="rating-button" on:click|preventDefault={submitFeedback}>
-					Enviar!
-				</button>
+				{#if feedbackSent}
+					<h4 role="alert" class="feedback-alert">Feedback enviado!</h4>
+				{:else}
+					<button type="button" class="rating-button" on:click|preventDefault={submitFeedback}>
+						Enviar!
+					</button>
+				{/if}
 			</div>
 			<small>Número de vezes que este link foi buscado: {data.hits}</small>
 		{/if}
@@ -139,6 +145,7 @@
 		justify-content: center;
 		align-items: center;
 		transition: all 0.5s;
+		overflow: auto;
 	}
 
 	.comment-card {
@@ -146,6 +153,10 @@
 		padding: 2rem;
 		justify-content: flex-start;
 		align-items: flex-start;
+	}
+
+	.feedback-alert {
+		text-align: center;
 	}
 
 	.label {

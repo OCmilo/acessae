@@ -1,7 +1,7 @@
 <script lang="ts">
 	export let name: string;
 	export let body: string;
-	export let user_score: number | undefined;
+	export let user_score: string | undefined;
 </script>
 
 <div class="wrapper">
